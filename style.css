@@ -51,6 +51,7 @@ body {
 .container {
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
 }
 
 .header {
@@ -511,11 +512,16 @@ body {
 /* ============ 8. MENSAJES Y DIÁLOGOS (Alertas) =========== */
 
 .message-container {
-  min-height: 60px;
-  margin-bottom: 20px;
+  position: absolute;
+  top: 230px;
+  left: 20px;
+  right: 20px;
+  z-index: 50;
+  pointer-events: none;
 }
 
 .message {
+  pointer-events: auto;
   padding: 15px 20px;
   border-radius: 10px;
   font-weight: bold;
