@@ -4,23 +4,11 @@
 
 El proyecto incluye un generador de puzles 100% aleatorio, un solucionador por _backtracking_, guardado de partidas, estadísticas y una interfaz limpia y responsiva.
 
-### [➡️ ¡Juega ahora mismo! (Demo en Vivo) ⬅️](https://TU_USUARIO.github.io/TU_REPO/)
-
-_(¡EDITA ESTO! Reemplaza la URL de arriba con tu enlace de GitHub Pages)_
+### [➡️ ¡Juega ahora mismo! ⬅️](https://albahdezs.github.io/sudoku/)
 
 ## 📸 Captura de Pantalla
 
-_(¡EDITA ESTO! Sigue las instrucciones de abajo para añadir tu propia captura)_
-
-![Captura de pantalla del juego Sudoku](URL_DE_TU_IMAGEN_AQUI)
-
-\*(Para añadir tu captura:
-
-1.  Haz una captura de pantalla de tu juego.
-2.  Crea una carpeta llamada `assets` en tu proyecto.
-3.  Guarda la imagen ahí (ej: `assets/screenshot.png`).
-4.  Sube esa carpeta a GitHub (`git add .`, `git commit`, `git push`).
-5.  Cambia la línea de arriba por: `![Captura de pantalla...](assets/screenshot.png)`)\*
+![Captura de pantalla del juego Sudoku](assets/sudoku.png)
 
 ---
 
@@ -80,5 +68,3 @@ Si quieres ejecutar este proyecto en tu propia máquina:
     _(Recomendado: Usa una extensión como "Live Server" en VS Code para verlo en un servidor local)._
 
 ---
-
-_Creado por (¡TU NOMBRE AQUÍ!)_
