@@ -511,15 +511,6 @@ body {
 
 /* ============ 8. MENSAJES Y DIÁLOGOS (Alertas) =========== */
 
-.message-container {
-  position: absolute;
-  top: 230px;
-  left: 20px;
-  right: 20px;
-  z-index: 50;
-  pointer-events: none;
-}
-
 .message {
   pointer-events: auto;
   padding: 15px 20px;
@@ -539,6 +530,30 @@ body {
   background: #fed7d7;
   border-left: 4px solid var(--danger);
   color: #822727;
+}
+
+#dialog-content-wrapper .message {
+  background: none;
+  border-left: none;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px 0 20px 0;
+  text-align: center;
+  margin-bottom: 0;
+  animation: none;
+}
+
+#dialog-content-wrapper .message.success {
+  color: var(--accent);
+}
+
+#dialog-content-wrapper .message.error {
+  color: var(--danger);
+}
+
+#dialog-content-wrapper .dialog-buttons {
+  margin-top: 10px;
 }
 
 @keyframes slideIn {

@@ -12,7 +12,6 @@ class SudokuUI {
     this.boardElement = document.getElementById("sudoku-board");
     this.numberPad = document.getElementById("number-pad");
     this.timerDisplay = document.getElementById("timer-display");
-    this.messageContainer = document.getElementById("message-container");
 
     this.statsModal = document.getElementById("stats-modal");
     this.statsModalContent = document.getElementById("modal-stats-content");
@@ -22,6 +21,9 @@ class SudokuUI {
     this.instructionsCloseBtn = document.getElementById(
       "modal-close-instructions"
     );
+
+    this.dialogModal = document.getElementById("dialog-modal");
+    this.dialogContent = document.getElementById("dialog-content-wrapper");
 
     this.numberCountsElement = document.getElementById("number-counts");
 
@@ -44,6 +46,16 @@ class SudokuUI {
     this.instructionsModal.addEventListener("click", (e) => {
       if (e.target === this.instructionsModal) {
         this.hideInstructions();
+      }
+    });
+
+    // Cierra el modal si se clica en el fondo (overlay)
+    this.dialogModal.addEventListener("click", (e) => {
+      if (e.target === this.dialogModal) {
+        // Solo se cierra si no es un diálogo de decisión
+        if (!this.dialogContent.querySelector(".dialog-buttons")) {
+          this.hideDialog();
+        }
       }
     });
   }
@@ -170,16 +182,46 @@ class SudokuUI {
    * Muestra un mensaje al usuario
    * @param {string} text - Texto del mensaje
    * @param {string} type - 'success' o 'error'
+   * @param {boolean} hasButton - true para mostrar un botón "OK"
    */
-  showMessage(text, type) {
-    this.messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+  showMessage(text, type, hasButton = false) {
+    // Crear el HTML del mensaje
+    let messageHtml = `<div class="message ${type}">${text}</div>`;
+
+    // Añadir botón si es necesario
+    if (hasButton) {
+      messageHtml += `
+      <div class="dialog-buttons">
+        <button id="dialog-ok" class="btn btn-solve">OK</button>
+      </div>
+      `;
+    }
+
+    // Lo ponemos en el modal y lo mostramos
+    this.dialogContent.innerHTML = messageHtml;
+    this.dialogModal.classList.remove("hidden");
+
+    // Asignar lógica de cierre
+    if (hasButton) {
+      // Si tiene botón, se cierra al clicarlo
+      this.dialogContent
+        .querySelector("#dialog-ok")
+        .addEventListener("click", () => {
+          this.hideDialog();
+        });
+    } else {
+      // Si no, se auto-cierra (para partida guardada)
+      setTimeout(() => {
+        this.hideDialog();
+      }, 3000);
+    }
   }
 
   /**
    * Limpia todos los mensajes
    */
   clearMessages() {
-    this.messageContainer.innerHTML = "";
+    this.hideDialog();
   }
 
   /**
@@ -273,7 +315,7 @@ class SudokuUI {
    * Muestra diálogo de confirmación para cargar partida
    */
   showLoadGameDialog(onAccept, onReject) {
-    const dialog = `
+    const dialogHtml = `
     <div class="dialog">
       <p>💾 Se encontró una partida guardada. ¿Deseas continuarla?</p>
       <div class="dialog-buttons">
@@ -283,10 +325,24 @@ class SudokuUI {
     </div>
     `;
 
-    this.messageContainer.innerHTML = dialog;
+    // Ponerlo en el modal y mostrarlo
+    this.dialogContent.innerHTML = dialogHtml;
+    this.dialogModal.classList.remove("hidden");
 
-    document.getElementById("load-yes").addEventListener("click", onAccept);
-    document.getElementById("load-no").addEventListener("click", onReject);
+    // Conectar los botones
+    this.dialogContent
+      .querySelector("#load-yes")
+      .addEventListener("click", () => {
+        this.hideDialog();
+        onAccept();
+      });
+
+    this.dialogContent
+      .querySelector("#load-no")
+      .addEventListener("click", () => {
+        this.hideDialog();
+        onReject();
+      });
   }
 
   /**
@@ -344,5 +400,14 @@ class SudokuUI {
    */
   hideInstructions() {
     this.instructionsModal.classList.add("hidden");
+  }
+
+  /**
+   * Oculta el modal de diálogo genérico
+   */
+  hideDialog() {
+    this.dialogModal.classList.add("hidden");
+    // Limpiamos el contenido para la próxima vez
+    this.dialogContent.innerHTML = "";
   }
 }

@@ -273,8 +273,9 @@ class SudokuController {
       if (this.solver.solve(boardCopy)) {
         this.solver.board = boardCopy;
         this.render();
-        this.ui.showMessage("¡Sudoku resulto correctamente!", "success");
+
         this.stopTimer();
+        this.ui.showMessage("¡Sudoku resulto correctamente!", "success", true);
 
         //Limpiar partida guardada al resolver
         this.storage.clearCurrentGame();
@@ -358,7 +359,8 @@ class SudokuController {
 
         this.ui.showMessage(
           `\¡Felicidades! Has completado en ${this.formatTime(this.timer)}`,
-          "success"
+          "success",
+          true
         );
       } else {
         this.ui.showMessage(
@@ -440,7 +442,6 @@ class SudokuController {
 
       if (success) {
         this.ui.showMessage("💾 Partida guardada correctamente", "success");
-        setTimeout(() => this.ui.clearMessages(), 2000);
       }
     } else {
       this.ui.showMessage("⚠️ Genera un Sudoku primero", "error");
