@@ -1,0 +1,618 @@
+/* ===================================================================
+
+   ===================================================================
+   1. Configuración Global y Variables
+   2. Layout Principal (Contenedor, Header)
+   3. Panel de Control (Dificultad, Timer)
+   4. Tablero de Juego (Board, Celdas)
+   5. Teclado Numérico y Contador
+   6. Botones de Acción y Menú
+   7. Modales (Overlay, Content, Stats, Instruct)
+   8. Mensajes y Diálogos (Alertas)
+   9. Responsive (Media Queries)
+   =================================================================== */
+
+/* ============ 1. CONFIGURACIÓN GLOBAL Y VARIABLES =========== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap");
+
+:root {
+  --bg-main: #f8f9fa;
+  --bg-panel: #ffffff;
+  --text-main: #2d3748;
+  --text-secondary: #4a5568;
+  --border-color: #e2e8f0;
+
+  --primary: #3182ce;
+  --primary-text: #ffffff;
+  --accent: #38d39f;
+  --accent-text: #ffffff;
+  --danger: #e53e3e;
+  --danger-text: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ============ 2. LAYOUT PRINCIPAL (Contenedor, Header) =========== */
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  color: var(--text-main);
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+/* ============ 3. PANEL DE CONTROL (Dificultad, Timer) =========== */
+
+.controls-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.difficulty-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.difficulty-buttons .btn {
+  min-width: 120px;
+}
+
+.timer {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text-main);
+}
+
+/* ============ 4. TABLERO DE JUEGO (Board, Celdas) =========== */
+
+.board-container {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sudoku-board {
+  display: inline-grid;
+  grid-template-columns: repeat(9, 1fr);
+  border: 3px solid var(--text-main);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.cell {
+  width: 45px;
+  height: 45px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: var(--text-main);
+  background: var(--bg-main);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cell:hover:not(.fixed) {
+  background: #ebf4ff;
+}
+
+.cell.fixed {
+  background: var(--bg-main);
+  color: var(--primary);
+  font-weight: 500;
+  cursor: default;
+}
+
+.cell.highlight {
+  background: aliceblue;
+}
+
+.cell.selected {
+  background: #ebf4ff;
+  color: var(--primary);
+  outline: 3px solid var(--primary);
+  outline-offset: -3px;
+  z-index: 10;
+}
+
+.cell.conflict {
+  background: #fed7d7;
+  color: var(--danger);
+}
+
+/* Líneas gruesas de las cajas */
+.cell:nth-child(3n):not(:nth-child(9n)) {
+  border-right: 2px solid var(--text-main);
+}
+
+.cell:nth-child(6n):not(:nth-child(9n)) {
+  border-right: 2px solid var(--text-main);
+}
+
+.cell:nth-child(n + 19):nth-child(-n + 27) {
+  border-bottom: 2px solid var(--text-main);
+}
+
+.cell:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 2px solid var(--text-main);
+}
+
+/* ============ 5. TECLADO NUMÉRICO Y CONTADOR =========== */
+
+.number-pad {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.number-pad.hidden {
+  display: none;
+}
+
+.num-btn {
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-text);
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.num-btn:hover {
+  filter: brightness(1.15);
+}
+
+.num-btn:active {
+  filter: brightness(0.9);
+}
+
+.num-clear {
+  background: var(--text-secondary);
+  color: var(--primary-text);
+}
+
+.number-counts {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 25px;
+  width: 100%;
+}
+
+.count-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  background: var(--bg-main);
+  border-radius: 6px;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+}
+
+.count-item .number {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-main);
+  margin-right: 6px;
+}
+
+.count-item .count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.count-item.completed {
+  background: #c6f6d5;
+  text-decoration: none;
+}
+
+.count-item.completed .number,
+.count-item.completed .count {
+  color: #22543d;
+  opacity: 0.7;
+}
+
+/* ============ 6. BOTONES DE ACCIÓN Y MENÚ =========== */
+
+.dropdown .btn-menu {
+  width: 100%;
+  height: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: filter 0.3s;
+  color: white;
+}
+
+.btn:hover {
+  filter: brightness(1.15);
+}
+
+.btn:active {
+  filter: brightness(0.9);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Botones de Dificultad y Acción */
+.btn-easy {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.btn-medium {
+  background: var(--primary);
+  color: var(--primary-text);
+}
+.btn-hard {
+  background: var(--danger);
+  color: var(--danger-text);
+}
+.btn-hint {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.btn-reset {
+  background: var(--danger);
+  color: var(--danger-text);
+}
+
+/* Menú */
+.btn-menu {
+  background: var(--text-secondary);
+  color: var(--primary-text);
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  min-width: 180px;
+  border-radius: 10px;
+  z-index: 100;
+  bottom: 120%;
+  right: 0;
+}
+
+.dropdown-content a {
+  color: var(--text-main);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 0.95rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+}
+.dropdown-content a:first-child {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.dropdown-content a:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--bg-main);
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+/* ============ 7. MODALES (Overlay, Content, Stats, Instruct) =========== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(45, 55, 72, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px 35px;
+  width: 90%;
+  max-width: 550px;
+  position: relative;
+  transform: scale(1);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.hidden .modal-content {
+  transform: scale(0.9);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: var(--text-main);
+}
+
+/* Contenido de Estadísticas (dentro del modal) */
+#modal-stats-content .stats-content {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.stats-content h3 {
+  color: var(--text-main);
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.stat-section {
+  background: var(--bg-main);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid var(--accent);
+}
+
+.stat-section h4 {
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.stat-section p {
+  color: var(--text-main);
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.best-times {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 2px solid var(--border-color);
+}
+
+.best-times h5 {
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.best-times ol {
+  margin-left: 20px;
+  color: var(--text-secondary);
+}
+
+/* Contenido de Instrucciones (dentro del modal) */
+.instructions {
+  background: var(--bg-panel);
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.instructions h2 {
+  color: var(--text-main);
+  margin-bottom: 15px;
+}
+
+.instructions ul {
+  list-style: none;
+  padding: 0;
+}
+
+.instructions li {
+  padding: 8px 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.text-red {
+  color: var(--danger);
+  font-weight: bold;
+}
+
+/* ============ 8. MENSAJES Y DIÁLOGOS (Alertas) =========== */
+
+.message-container {
+  min-height: 60px;
+  margin-bottom: 20px;
+}
+
+.message {
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.message.success {
+  background: #c6f6d5;
+  border-left: 4px solid var(--accent);
+  color: #22543d;
+}
+
+.message.error {
+  background: #fed7d7;
+  border-left: 4px solid var(--danger);
+  color: #822727;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Diálogo de carga */
+.dialog {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+}
+
+.dialog p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: var(--text-main);
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dialog-buttons .btn {
+  min-width: 150px;
+}
+
+.dialog-buttons .btn-solve {
+  background-color: var(--accent);
+}
+
+.dialog-buttons .btn-clear {
+  background-color: var(--danger);
+}
+
+/* ============ 9. RESPONSIVE (Media Queries) =========== */
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .cell {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+
+  .num-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .number-pad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .dialog-buttons {
+    flex-direction: column;
+  }
+
+  .dialog-buttons .btn {
+    width: 100%;
+  }
+
+  .number-counts {
+    flex-wrap: wrap;
+  }
+}

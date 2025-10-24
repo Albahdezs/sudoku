@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>🔢 Sudoku</h1>
+      </header>
+
+      <div class="controls-panel">
+        <div class="difficulty-buttons">
+          <button id="btn-easy" class="btn btn-easy">🏆 Fácil</button>
+          <button id="btn-medium" class="btn btn-medium">🏆 Medio</button>
+          <button id="btn-hard" class="btn btn-hard">🏆 Difícil</button>
+        </div>
+        <div class="timer">
+          <span>⏱️</span>
+          <span id="timer-display">00:00</span>
+        </div>
+      </div>
+
+      <div id="message-container" class="message-container"></div>
+
+      <div class="board-container">
+        <div id="sudoku-board" class="sudoku-board"></div>
+
+        <div class="action-buttons">
+          <button id="btn-hint" class="btn btn-hint">💡 Pista</button>
+          <button id="btn-reset" class="btn btn-reset">🔄 Reiniciar</button>
+
+          <div class="dropdown">
+            <button id="btn-menu" class="btn btn-menu">☰ Menú</button>
+            <div id="menu-content" class="dropdown-content">
+              <a href="#" id="menu-solve">⚡ Resolver</a>
+              <a href="#" id="menu-save">💾 Guardar</a>
+              <a href="#" id="menu-clear">🗑️ Limpiar</a>
+              <a href="#" id="menu-stats">📊 Estadísticas</a>
+              <a href="#" id="menu-instructions">📋 Instrucciones</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="number-pad" class="number-pad hidden">
+          <button class="num-btn" data-num="1">1</button>
+          <button class="num-btn" data-num="2">2</button>
+          <button class="num-btn" data-num="3">3</button>
+          <button class="num-btn" data-num="4">4</button>
+          <button class="num-btn" data-num="5">5</button>
+          <button class="num-btn" data-num="6">6</button>
+          <button class="num-btn" data-num="7">7</button>
+          <button class="num-btn" data-num="8">8</button>
+          <button class="num-btn" data-num="9">9</button>
+          <button class="num-btn num-clear" data-num="0">✕</button>
+        </div>
+
+        <div id="number-counts" class="number-counts"></div>
+      </div>
+
+      <div id="instructions-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+          <button id="modal-close-instructions" class="modal-close">
+            &times;
+          </button>
+          <div class="instructions">
+            <h2>📋 Instrucciones</h2>
+            <ul>
+              <li>
+                <strong>Generar:</strong> Crea un nuevo Sudoku con diferentes
+                niveles de dificultad
+              </li>
+              <li>
+                <strong>Jugar:</strong> Haz clic en una celda vacía y selecciona
+                un número del teclado
+              </li>
+              <li>
+                <strong>Resolver:</strong> El algoritmo de backtracking
+                resolverá automáticamente el puzzle
+              </li>
+              <li>
+                <strong>Pista:</strong> Obtén ayuda con la siguiente celda vacía
+              </li>
+              <li>
+                <strong>Guardar:</strong> Guarda tu progreso para continuar
+                después
+              </li>
+              <li>
+                <strong>Estadísticas:</strong> Ve tus mejores tiempos y progreso
+              </li>
+              <li>
+                Las celdas en <span class="text-red">rojo</span> indican
+                conflictos
+              </li>
+              <li>
+                <strong>Auto-guardado:</strong> Tu partida se guarda
+                automáticamente cada 30 segundos
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="stats-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+
+        <div id="modal-stats-content"></div>
+      </div>
+    </div>
+
+    <!-- Scripts en orden de dependencia -->
+    <script src="src/js/SudokuStorage.js"></script>
+    <script src="src/js/SudokuSolver.js"></script>
+    <script src="src/js/SudokuUI.js"></script>
+    <script src="src/js/SudokuController.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
