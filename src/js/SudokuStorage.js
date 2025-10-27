@@ -7,6 +7,9 @@
  */
 
 class SudokuStorage {
+  static MAX_BEST_TIMES = 10;
+  static GAME_EXPIRY_DAYS = 7;
+
   constructor() {
     this.STORAGE_KEYS = {
       CURRENT_GAME: "sudoku_current_game",
@@ -51,8 +54,9 @@ class SudokuStorage {
       const gameState = JSON.parse(data);
 
       // Verificar que no sea muy antigua (más de 7 días)
-      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      if (gameState.timestamp < weekAgo) {
+      const expiryTime =
+        Date.now() - SudokuStorage.GAME_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+      if (gameState.timestamp < expiryTime) {
         this.clearCurrentGame();
         return null;
       }
@@ -91,7 +95,10 @@ class SudokuStorage {
 
       // Mantener solo los mejores 10 tiempos
       times[difficulty].sort((a, b) => a.time - b.time);
-      times[difficulty] = times[difficulty].slice(0, 10);
+      times[difficulty] = times[difficulty].slice(
+        0,
+        SudokuStorage.MAX_BEST_TIMES
+      );
 
       localStorage.setItem(this.STORAGE_KEYS.BEST_TIMES, JSON.stringify(times));
 

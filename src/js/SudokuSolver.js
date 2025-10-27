@@ -8,6 +8,19 @@
  */
 
 class SudokuSolver {
+  // Constantes de clase
+  static BOARD_SIZE = 9;
+  static BOX_SIZE = 3;
+  static MIN_NUMBER = 1;
+  static MAX_NUMBER = 9;
+
+  // Configuración de dificultad
+  static DIFFICULTY_CONFIG = {
+    easy: 35,
+    medium: 45,
+    hard: 55,
+  };
+
   constructor() {
     this.board = this.createEmptyBoard();
     this.initialBoard = this.createEmptyBoard();
@@ -17,11 +30,10 @@ class SudokuSolver {
    * Crea un tablero vacío de 9x9
    * @returns {Array} Matriz 9x9 llena de ceros
    */
-
   createEmptyBoard() {
-    return Array(9)
+    return Array(SudokuSolver.BOARD_SIZE)
       .fill()
-      .map(() => Array(9).fill(0));
+      .map(() => Array(SudokuSolver.BOARD_SIZE).fill(0));
   }
 
   /**
@@ -31,29 +43,32 @@ class SudokuSolver {
    * @param {number} row - Fila (0-8)
    * @param {number} col - Columna (0-8)
    * @param {number} num - Número a validar (1-9)
+   *  @param {boolean} excludeCurrentCell - Si true, excluye la celda actual de la validación
    * @returns {boolean} true si es válido, false si no
    */
-  isValid(board, row, col, num) {
+  isValid(board, row, col, num, excludeCurrentCell) {
     // Validar fila
-    for (let x = 0; x < 9; x++) {
+    for (let x = 0; x < SudokuSolver.BOARD_SIZE; x++) {
       if (x !== col && board[row][x] === num) {
         return false;
       }
     }
 
     // Validar columna
-    for (let x = 0; x < 9; x++) {
+    for (let x = 0; x < SudokuSolver.BOARD_SIZE; x++) {
       if (x !== row && board[x][col] === num) {
         return false;
       }
     }
 
     // Validar cuadrante 3x3
-    const startRow = Math.floor(row / 3) * 3;
-    const startCol = Math.floor(col / 3) * 3;
+    const startRow =
+      Math.floor(row / SudokuSolver.BOX_SIZE) * SudokuSolver.BOX_SIZE;
+    const startCol =
+      Math.floor(col / SudokuSolver.BOX_SIZE) * SudokuSolver.BOX_SIZE;
 
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < SudokuSolver.BOX_SIZE; i++) {
+      for (let j = 0; j < SudokuSolver.BOX_SIZE; j++) {
         const r = startRow + i;
         const c = startCol + j;
         if ((r !== row || c !== col) && board[r][c] === num) {
@@ -71,8 +86,8 @@ class SudokuSolver {
    * @returns {Array|null} - [fila, columna] o null si no hay celdas vacías
    */
   findEmpty(board) {
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
+    for (let i = 0; i < SudokuSolver.BOARD_SIZE; i++) {
+      for (let j = 0; j < SudokuSolver.BOARD_SIZE; j++) {
         if (board[i][j] === 0) {
           return [i, j];
         }
@@ -89,8 +104,8 @@ class SudokuSolver {
    */
   findAllEmpty(board) {
     const emptyCells = [];
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
+    for (let i = 0; i < SudokuSolver.BOARD_SIZE; i++) {
+      for (let j = 0; j < SudokuSolver.BOARD_SIZE; j++) {
         if (board[i][j] === 0) {
           emptyCells.push([i, j]);
         }
@@ -114,7 +129,11 @@ class SudokuSolver {
     const [row, col] = empty;
 
     // Intentar números del 1 al 9
-    for (let num = 1; num <= 9; num++) {
+    for (
+      let num = SudokuSolver.MIN_NUMBER;
+      num <= SudokuSolver.MAX_NUMBER;
+      num++
+    ) {
       if (this.isValid(board, row, col, num)) {
         board[row][col] = num;
 
@@ -137,8 +156,8 @@ class SudokuSolver {
    * @returns {boolean} true si es válido, false si tiene conflictos
    */
   validateBoard(board) {
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
+    for (let i = 0; i < SudokuSolver.BOARD_SIZE; i++) {
+      for (let j = 0; j < SudokuSolver.BOARD_SIZE; j++) {
         if (board[i][j] !== 0) {
           const num = board[i][j];
           board[i][j] = 0;
@@ -163,8 +182,8 @@ class SudokuSolver {
   detectConflicts(board) {
     const conflicts = new Set();
 
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
+    for (let i = 0; i < SudokuSolver.BOARD_SIZE; i++) {
+      for (let j = 0; j < SudokuSolver.BOARD_SIZE; j++) {
         if (board[i][j] !== 0) {
           const num = board[i][j];
           board[i][j] = 0;
@@ -180,46 +199,6 @@ class SudokuSolver {
     return conflicts;
   }
 
-  // /**
-  //  * Genera un nuevo Sudoku con algoritmo mejorado
-  //  * Genera tableros completamente aleatorios
-  //  * @param {string} difficulty - 'easy', 'medium' o 'hard'
-  //  * @returns {Array} Tablero de Sudoku generado
-  //  */
-  // generate(difficulty = "medium") {
-  //   const newBoard = this.createEmptyBoard();
-
-  //   // Llenar diagonal principal con números aleatorios
-  //   for (let box = 0; box < 9; box += 3) {
-  //     const nums = this.shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-  //     let idx = 0;
-
-  //     for (let i = 0; i < 3; i++) {
-  //       for (let j = 0; j < 3; j++) {
-  //         newBoard[box + i][box + j] = nums[idx++];
-  //       }
-  //     }
-  //   }
-
-  //   // Resolver el tablero completo
-  //   this.solve(newBoard);
-
-  //   // Remover números según la dificultad
-  //   const config = {
-  //     easy: { remove: 35, symmetry: true },
-  //     medium: { remove: 45, symmetry: true },
-  //     hard: { remove: 55, symmetry: true },
-  //   }[difficulty];
-
-  //   this.removeNumbers(newBoard, config.remove, config.symmetry);
-
-  //   // Guardar tableros
-  //   this.board = newBoard.map((row) => [...row]);
-  //   this.initialBoard = newBoard.map((row) => [...row]);
-
-  //   return this.board;
-  // }
-
   /**
    * Resuelve el tablero usando backtracking con un orden de números aleatorio.
    * Esto es la clave para generar puzles 100% únicos.
@@ -233,7 +212,14 @@ class SudokuSolver {
     const [row, col] = empty;
 
     // ¡TRUCO! Probar números en orden aleatorio
-    const numbers = this.shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const numbers = this.shuffleArray(
+      Array.from(
+        {
+          length: SudokuSolver.MAX_NUMBER,
+        },
+        (_, i) => i + SudokuSolver.MIN_NUMBER
+      )
+    );
 
     for (const num of numbers) {
       if (this.isValid(board, row, col, num)) {
@@ -261,16 +247,14 @@ class SudokuSolver {
     this.solveRandomly(newBoard);
 
     // 2. Borra números al azar (Tu método ANTIGUO, sin simetría)
-    const cellsToRemove = {
-      easy: 35, // Ajusta estos valores como quieras
-      medium: 45,
-      hard: 55,
-    }[difficulty];
+    const cellsToRemove =
+      SudokuSolver.DIFFICULTY_CONFIG[difficulty] ||
+      SudokuSolver.DIFFICULTY_CONFIG.medium;
 
     let removed = 0;
     while (removed < cellsToRemove) {
-      const row = Math.floor(Math.random() * 9);
-      const col = Math.floor(Math.random() * 9);
+      const row = Math.floor(Math.random() * SudokuSolver.BOARD_SIZE);
+      const col = Math.floor(Math.random() * SudokuSolver.BOARD_SIZE);
 
       if (newBoard[row][col] !== 0) {
         newBoard[row][col] = 0;
@@ -284,47 +268,6 @@ class SudokuSolver {
 
     return this.board;
   }
-
-  // /**
-  //  * Remueve números del tablero con opción de simetría
-  //  * @param {number[][]} board - Tablero completo de Sudoku
-  //  * @param {number} count - Cantidad de números que se eliminarán
-  //  * @param {boolean} symmetry - Si es true, se eliminan celdas simétricamente
-  //  * @retuns {void}
-  //  */
-  // removeNumbers(board, count, symmetry) {
-  //   let removed = 0;
-  //   const cells = [];
-
-  //   // Crear lista de celdas disponibles
-  //   for (let i = 0; i < 9; i++) {
-  //     for (let j = 0; j < 9; j++) {
-  //       cells.push([i, j]);
-  //     }
-  //   }
-
-  //   this.shuffleArray(cells);
-
-  //   for (const [row, col] of cells) {
-  //     if (removed >= count) break;
-
-  //     if (board[row][col] !== 0) {
-  //       const backup = board[row][col];
-  //       board[row][col] = 0;
-  //       removed++;
-
-  //       // Aplicar simetría si está activada
-  //       if (symmetry && removed < count) {
-  //         const symRow = 8 - row;
-  //         const symCol = 8 - col;
-  //         if (board[symRow][symCol] !== 0) {
-  //           board[symRow][symCol] = 0;
-  //           removed++;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 
   /**
    * Mezcla aleatoriamente (Fisher-Yates)

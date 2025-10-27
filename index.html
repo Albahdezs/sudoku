@@ -34,7 +34,12 @@
           <div class="dropdown">
             <button id="btn-menu" class="btn btn-menu">☰ Menú</button>
             <div id="menu-content" class="dropdown-content">
-              <a href="#" id="menu-solve">⚡ Resolver</a>
+              <a
+                href="#"
+                id="menu-solve"
+                title="Muestra la solución (no guarda estadísticas)"
+                >⚡ Resolver</a
+              >
               <a href="#" id="menu-save">💾 Guardar</a>
               <a href="#" id="menu-clear">🗑️ Limpiar</a>
               <a href="#" id="menu-stats">📊 Estadísticas</a>
@@ -80,6 +85,11 @@
                 resolverá automáticamente el puzzle
               </li>
               <li>
+                ⚠️ Usar el botón <strong>Resolver</strong> te mostrará la
+                solución, pero esa partida <strong>no contará</strong> para tus
+                estadísticas ni mejores tiempos.
+              </li>
+              <li>
                 <strong>Pista:</strong> Obtén ayuda con la siguiente celda vacía
               </li>
               <li>
@@ -93,6 +103,10 @@
                 Las celdas en <span class="text-red">rojo</span> indican
                 conflictos
               </li>
+              <li>
+                <strong>Estadísticas:</strong> Ve tus mejores tiempos y progreso
+              </li>
+
               <li>
                 <strong>Auto-guardado:</strong> Tu partida se guarda
                 automáticamente cada 30 segundos

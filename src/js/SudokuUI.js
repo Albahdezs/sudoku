@@ -9,8 +9,10 @@
 
 class SudokuUI {
   constructor() {
+    // Inicialización de elementos DOM
     this.boardElement = document.getElementById("sudoku-board");
     this.numberPad = document.getElementById("number-pad");
+
     this.timerDisplay = document.getElementById("timer-display");
 
     this.statsModal = document.getElementById("stats-modal");
@@ -29,25 +31,9 @@ class SudokuUI {
 
     this.selectedCell = null;
 
-    // Para cerrar el modal
-    this.modalCloseBtn.addEventListener("click", () => this.hideStatistics());
-
-    // Clicar en el fondo también cierra el modal
-    this.statsModal.addEventListener("click", (e) => {
-      if (e.target === this.statsModal) {
-        this.hideStatistics();
-      }
-    });
-
-    // Modal de instrucciones
-    this.instructionsCloseBtn.addEventListener("click", () =>
-      this.hideInstructions()
-    );
-    this.instructionsModal.addEventListener("click", (e) => {
-      if (e.target === this.instructionsModal) {
-        this.hideInstructions();
-      }
-    });
+    // Configurar modales
+    this.setupModalListeners(this.statsModal, this.modalCloseBtn);
+    this.setupModalListeners(this.instructionsModal, this.instructionsCloseBtn);
 
     // Cierra el modal si se clica en el fondo (overlay)
     this.dialogModal.addEventListener("click", (e) => {
@@ -56,6 +42,43 @@ class SudokuUI {
         if (!this.dialogContent.querySelector(".dialog-buttons")) {
           this.hideDialog();
         }
+      }
+    });
+  }
+
+  // Métodos genéricos de modales
+  /**
+   * Muestra el modal genérico
+   * @param {HTMLElement} modal - Elemento del modal
+   */
+  showModal(modal) {
+    modal.classList.remove("hidden");
+  }
+
+  /**
+   * Oculta el modal genérico
+   * @param {HTMLElement} modal - Elemento del modal
+   */
+  hideModal(modal) {
+    modal.classList.add("hidden");
+  }
+
+  /**
+   * Configura event listeners para un modal
+   * @param {HTMLElement} modal - Elemento del modal
+   * @param {HTMLElement} closeBtn - Botón de cerrar
+   * @param {Function} onClose - Callback opcional al cerrar
+   */
+  setupModalListeners(modal, closeBtn, onClose = null) {
+    closeBtn.addEventListener("click", () => {
+      this.hideModal(modal);
+      if (onClose) onClose();
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        this.hideModal(modal);
+        if (onClose) onClose();
       }
     });
   }
@@ -308,7 +331,7 @@ class SudokuUI {
     html += "</div>";
 
     this.statsModalContent.innerHTML = html;
-    this.statsModal.classList.remove("hidden");
+    this.showModal(this.statsModal);
   }
 
   /**
@@ -349,7 +372,7 @@ class SudokuUI {
    * Oculta el modal de estadísticas
    */
   hideStatistics() {
-    this.statsModal.classList.add("hidden");
+    this.hideModal(this.statsModal);
   }
 
   /**
@@ -392,21 +415,21 @@ class SudokuUI {
    * Muestra el modal de instrucciones
    */
   showInstructions() {
-    this.instructionsModal.classList.remove("hidden");
+    this.showModal(this.instructionsModal);
   }
 
   /**
    * Oculta el modal de instrucciones
    */
   hideInstructions() {
-    this.instructionsModal.classList.add("hidden");
+    this.hideModal(this.instructionsModal);
   }
 
   /**
    * Oculta el modal de diálogo genérico
    */
   hideDialog() {
-    this.dialogModal.classList.add("hidden");
+    this.hideModal(this.dialogModal);
     // Limpiamos el contenido para la próxima vez
     this.dialogContent.innerHTML = "";
   }

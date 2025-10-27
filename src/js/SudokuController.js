@@ -8,6 +8,9 @@
  */
 
 class SudokuController {
+  static AUTOSAVE_INTERVAL = 30000;
+  static MESSAGE_TIMEOUT = 3000;
+
   constructor(solver, ui, storage) {
     this.solver = solver;
     this.ui = ui;
@@ -54,9 +57,8 @@ class SudokuController {
 
       this.render();
       this.ui.updateTimer(this.timer);
-      this.ui.showMessage("✅ Partida cargada correctamente", "success");
 
-      setTimeout(() => this.ui.clearMessages(), 3000);
+      this.showTemporaryMessage("✅ Partida cargada correctamente", "success");
     }
   }
 
@@ -167,7 +169,17 @@ class SudokuController {
       if (this.isRunning && this.currentDifficulty) {
         this.autoSave();
       }
-    }, 30000);
+    }, SudokuController.AUTOSAVE_INTERVAL);
+  }
+
+  /**
+   * Muestra un mensaje temporal y lo oculta automáticamente
+   * @param {string} text - Texto del mensaje
+   * @param {string} type - Tipo de mensaje
+   */
+  showTemporaryMessage(text, type = "success") {
+    this.ui.showMessage(text, type);
+    setTimeout(() => this.ui.clearMessages(), SudokuController.MESSAGE_TIMEOUT);
   }
 
   /**
@@ -252,35 +264,47 @@ class SudokuController {
   }
 
   /**
-   * Resuleve el Sudoku actual usando backtracking
+   * Resuelve el Sudoku siempre desde el inicio usando backtracking
+   * Muestra la solución, pero no guarda estadísticas
    */
   solveSudoku() {
     this.ui.clearMessages();
 
-    // Validar que le tablero actual sea válido
-    if (!this.solver.validateBoard(this.solver.board)) {
-      this.ui.showMessage(
-        "El Sudoku actual tiene conflictos y no se puede resolver",
-        "error"
-      );
-      return;
-    }
+    // Comprueba si el tablero inicial tiene conflictos
+    const currentBoardIsValid = this.solver.validateBoard(this.solver.board);
 
     // Resolver en el siguiente tick para no bloquear la UI
     setTimeout(() => {
-      const boardCopy = this.solver.copyBoard(this.solver.board);
+      let boardToSolve;
+      let solved = false;
+      // Copia del tablero inicial
 
-      if (this.solver.solve(boardCopy)) {
-        this.solver.board = boardCopy;
+      // Intentamos resolver la copia limpia
+      if (currentBoardIsValid) {
+        // Si NO hay conflictos: Intentar resolver desde el estado ACTUAL
+        boardToSolve = this.solver.copyBoard(this.solver.board);
+        solved = this.solver.solve(boardToSolve);
+      } else {
+        // SI hay conflictos: Resolver desde el INICIO
+        boardToSolve = this.solver.copyBoard(this.solver.initialBoard);
+        solved = this.solver.solve(boardToSolve);
+      }
+
+      // Mostrar resultado
+      if (solved) {
+        this.solver.board = boardToSolve;
         this.render();
 
         this.stopTimer();
-        this.ui.showMessage("¡Sudoku resulto correctamente!", "success", true);
-
-        //Limpiar partida guardada al resolver
+        this.ui.showMessage("¡Sudoku resuelto!", "success", true);
         this.storage.clearCurrentGame();
       } else {
-        this.ui.showMessage("No se pudo enconrar una solución válida", "error");
+        // Esto puede pasar si el usuario pone números que bloquean la solución
+        this.ui.showMessage(
+          "No se pudo encontrar una solución válida desde el estado actual",
+          "error",
+          true
+        );
       }
     }, 100);
   }
@@ -303,7 +327,7 @@ class SudokuController {
     this.render();
     this.ui.setSelectedCell([row, col]);
 
-    this.ui.showMessage(
+    this.showTemporaryMessage(
       `💡 Pista: ${num} en fila ${row + 1}, columna ${col + 1}`,
       "success"
     );
@@ -441,7 +465,10 @@ class SudokuController {
       });
 
       if (success) {
-        this.ui.showMessage("💾 Partida guardada correctamente", "success");
+        this.showTemporaryMessage(
+          "💾 Partida guardada correctamente",
+          "success"
+        );
       }
     } else {
       this.ui.showMessage("⚠️ Genera un Sudoku primero", "error");
