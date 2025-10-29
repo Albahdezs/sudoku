@@ -1,5 +1,4 @@
 /* ===================================================================
-
    ===================================================================
    1. Configuración Global y Variables
    2. Layout Principal (Contenedor, Header)
@@ -682,18 +681,18 @@ body {
 
   /* Contador de números más pequeño */
   .number-counts {
-    flex-wrap: no-wrap;
-    gap: 3px;
+    flex-wrap: wrap;
+    gap: 5px;
     margin-top: 15px;
   }
 
   .count-item {
-    padding: 4px 4px;
+    padding: 4px 8px;
   }
 
   .count-item .number {
-    font-size: 0.85rem;
-    margin-right: 2px;
+    font-size: 1rem;
+    margin-right: 4px;
   }
 
   .count-item .count {
@@ -716,6 +715,7 @@ body {
   /* Modal más compacto */
   .modal-content {
     padding: 20px;
+    max-width: 95%;
   }
 
   .dialog {
@@ -727,15 +727,67 @@ body {
     margin-bottom: 15px;
   }
 
-  .cell {
-    width: 35px;
-    height: 35px;
-    font-size: 1.2rem;
+  /* Estadísticas más compactas */
+  .stats-content h3 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+
+  .stat-section {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .stat-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .stat-section p {
+    font-size: 0.9rem;
+    margin: 4px 0;
+  }
+
+  .best-times {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .best-times h5 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .best-times ol {
+    margin-left: 15px;
+    font-size: 0.85rem;
+  }
+
+  .best-times li {
+    margin-bottom: 4px;
+  }
+
+  /* Instrucciones más compactas */
+  .instructions h2 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+  }
+
+  .instructions li {
+    padding: 6px 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Botón cerrar modal más pequeño */
+  .modal-close {
+    font-size: 2rem;
+    top: 8px;
+    right: 12px;
   }
 }
 
 /* Para pantallas muy pequeñas */
-
 @media (max-width: 400px) {
   .difficulty-buttons .btn {
     min-width: 70px;
@@ -763,5 +815,38 @@ body {
 
   .number-pad {
     gap: 3px;
+  }
+
+  /* Estadísticas aún más compactas */
+  .modal-content {
+    padding: 15px;
+  }
+
+  .stats-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .stat-section {
+    padding: 10px;
+  }
+
+  .stat-section h4 {
+    font-size: 1rem;
+  }
+
+  .stat-section p {
+    font-size: 0.85rem;
+  }
+
+  .best-times ol {
+    font-size: 0.8rem;
+  }
+
+  .instructions h2 {
+    font-size: 1.2rem;
+  }
+
+  .instructions li {
+    font-size: 0.85rem;
   }
 }
