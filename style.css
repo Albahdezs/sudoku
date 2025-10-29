@@ -604,8 +604,45 @@ body {
 /* ============ 9. RESPONSIVE (Media Queries) =========== */
 
 @media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
   .header h1 {
     font-size: 2rem;
+  }
+
+  .header p {
+    font-size: 0.95rem;
+  }
+
+  /* Panel de control más compacto */
+  .controls-panel {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  /* Botones de dificultad más pequeños */
+  .difficulty-buttons {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .difficulty-buttons .btn {
+    min-width: 80px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  /* Timer más pequeño */
+  .timer {
+    font-size: 1.5rem;
+  }
+
+  /* Tablero más compacto */
+  .board-container {
+    padding: 15px;
+    margin-bottom: 15px;
   }
 
   .cell {
@@ -614,26 +651,108 @@ body {
     font-size: 1.2rem;
   }
 
+  /* Botones de acción más pequeños */
+  .action-buttons {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .action-buttons .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    min-width: 90px;
+  }
+
+  /* Teclado numérico más compacto */
   .num-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
+    width: 35px;
+    height: 35px;
+    font-size: 1.1rem;
   }
 
   .number-pad {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
   }
 
+  /* Contador de números más pequeño */
+  .number-counts {
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 15px;
+  }
+
+  .count-item {
+    padding: 4px 8px;
+  }
+
+  .count-item .number {
+    font-size: 1rem;
+    margin-right: 4px;
+  }
+
+  .count-item .count {
+    font-size: 0.75rem;
+  }
+
+  /* Botones de diálogo más pequeños */
   .dialog-buttons {
     flex-direction: column;
+    gap: 10px;
   }
 
   .dialog-buttons .btn {
     width: 100%;
+    min-width: unset;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
 
-  .number-counts {
-    flex-wrap: wrap;
+  /* Modal más compacto */
+  .modal-content {
+    padding: 20px;
+  }
+
+  .dialog {
+    padding: 20px;
+  }
+
+  .dialog p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+
+  .cell {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 400px) {
+  .difficulty-buttons .btn {
+    min-width: 70px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .action-buttons .btn {
+    min-width: 80px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .cell {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+
+  .num-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
   }
 }
