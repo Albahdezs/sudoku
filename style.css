@@ -665,36 +665,39 @@ body {
 
   /* Teclado numérico más compacto */
   .num-btn {
-    width: 35px;
-    height: 35px;
-    font-size: 1.1rem;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+    border-radius: 6px;
   }
 
   .number-pad {
     display: flex;
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: 4px;
     overflow-x: auto;
+    margin-top: 15px;
+    padding: 0 5px;
   }
 
   /* Contador de números más pequeño */
   .number-counts {
-    flex-wrap: wrap;
-    gap: 5px;
+    flex-wrap: no-wrap;
+    gap: 3px;
     margin-top: 15px;
   }
 
   .count-item {
-    padding: 4px 8px;
+    padding: 2px 4px;
   }
 
   .count-item .number {
-    font-size: 1rem;
-    margin-right: 4px;
+    font-size: 0.65rem;
+    margin-right: 2px;
   }
 
   .count-item .count {
-    font-size: 0.75rem;
+    font-size: 0.5rem;
   }
 
   /* Botones de diálogo más pequeños */
@@ -732,6 +735,7 @@ body {
 }
 
 /* Para pantallas muy pequeñas */
+
 @media (max-width: 400px) {
   .difficulty-buttons .btn {
     min-width: 70px;
@@ -752,8 +756,12 @@ body {
   }
 
   .num-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+
+  .number-pad {
+    gap: 3px;
   }
 }
