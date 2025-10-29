@@ -23,7 +23,7 @@ Este no es solo un tablero de Sudoku, ¡es una aplicación web completa!
 - **Guardado de Partidas:** Guarda tu progreso en `localStorage` para continuar más tarde.
 - **Auto-Guardado:** Guarda tu partida automáticamente cada 30 segundos.
 - **Estadísticas Completas:** Un modal muestra partidas jugadas, completadas, mejor tiempo y tiempo promedio por dificultad.
-- **Mejores Tiempos:** Guarda tu Top 10 de tiempos por dificultad.
+- **Mejores Tiempos:** Guarda tu Top 5 de tiempos por dificultad.
 - **Contador de Números:** Una barra de accesibilidad te muestra cuántos "1", "2", "3", etc., te faltan por poner.
 - **Interfaz de Usuario Moderna:**
   - Resaltado de fila, columna y celda seleccionada.
