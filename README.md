@@ -26,7 +26,6 @@ Este no es solo un tablero de Sudoku, ¡es una aplicación web completa!
 - **Mejores Tiempos:** Guarda tu Top 10 de tiempos por dificultad.
 - **Contador de Números:** Una barra de accesibilidad te muestra cuántos "1", "2", "3", etc., te faltan por poner.
 - **Interfaz de Usuario Moderna:**
-  - Diseño limpio (Tema "Menta y Carbón").
   - Resaltado de fila, columna y celda seleccionada.
   - Detección de conflictos (números duplicados) en tiempo real.
   - Menú desplegable y modales (pop-ups) para una UI limpia.
