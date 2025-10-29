@@ -10,6 +10,7 @@
 class SudokuController {
   static AUTOSAVE_INTERVAL = 30000;
   static MESSAGE_TIMEOUT = 3000;
+  static SOLVE_DELAY = 100;
 
   constructor(solver, ui, storage) {
     this.solver = solver;
@@ -67,25 +68,56 @@ class SudokuController {
    */
   initEventListeners() {
     // Botones de dificultad
-    document
-      .getElementById("btn-easy")
-      .addEventListener("click", () => this.generateSudoku("easy"));
-    document
-      .getElementById("btn-medium")
-      .addEventListener("click", () => this.generateSudoku("medium"));
-    document
-      .getElementById("btn-hard")
-      .addEventListener("click", () => this.generateSudoku("hard"));
+    this.setupDifficultyButtons();
 
-    // Botones de acción visibles
+    // Botones de acción
+    this.setupActionButtons();
+
+    // Menú desplegable
+    this.setupMenu();
+
+    // Teclado numérico
+    this.setupNumberPad();
+
+    // Celdas del tablero
+    this.setupBoardEvents();
+
+    // Teclado físico
+    this.setupKeyboardEvents();
+
+    // Auto-guardar periórico
+    this.setupAutoSave();
+  }
+
+  /**
+   * Configura los botones de dificultad
+   */
+  setupDifficultyButtons() {
+    const difficulties = ["easy", "medium", "hard"];
+    difficulties.forEach((diff) => {
+      document
+        .getElementById(`btn-${diff}`)
+        .addEventListener("click", () => this.generateSudoku(diff));
+    });
+  }
+
+  /**
+   * Configura los botonces de acción principales
+   */
+  setupActionButtons() {
     document
       .getElementById("btn-hint")
       .addEventListener("click", () => this.showHint());
+
     document
       .getElementById("btn-reset")
       .addEventListener("click", () => this.resetBoard());
+  }
 
-    // Botón menú
+  /**
+   * Configura el menú desplegable
+   */
+  setupMenu() {
     const menuBtn = document.getElementById("btn-menu");
     const menuContent = document.getElementById("menu-content");
 
@@ -94,58 +126,50 @@ class SudokuController {
       menuContent.classList.toggle("show");
     });
 
-    // Conectar los enlaces del menú
-    document.getElementById("menu-solve").addEventListener("click", (e) => {
-      e.preventDefault();
-      this.solveSudoku();
-      menuContent.classList.remove("show");
-    });
+    // Opciones menú
+    const menuActions = {
+      "menu-solve": () => this.solveSudoku(),
+      "menu-save": () => this.saveGame(),
+      "menu-clear": () => this.clearBoard(),
+      "menu-stats": () => this.showStatistics(),
+      "menu-instructions": () => this.ui.showInstructions(),
+    };
 
-    document.getElementById("menu-save").addEventListener("click", (e) => {
-      e.preventDefault();
-      this.saveGame();
-      menuContent.classList.remove("show");
-    });
-
-    document.getElementById("menu-clear").addEventListener("click", (e) => {
-      e.preventDefault();
-      this.clearBoard();
-      menuContent.classList.remove("show");
-    });
-
-    document.getElementById("menu-stats").addEventListener("click", (e) => {
-      e.preventDefault();
-      this.showStatistics();
-      menuContent.classList.remove("show");
-    });
-
-    // Conectar el modal de instrucciones
-    document
-      .getElementById("menu-instructions")
-      .addEventListener("click", (e) => {
+    Object.entries(menuActions).forEach(([id, action]) => {
+      document.getElementById(id).addEventListener("click", (e) => {
         e.preventDefault();
-        this.ui.showInstructions();
+        action();
         menuContent.classList.remove("show");
       });
+    });
 
     // Cierra el menú si se hace click fuera
     window.addEventListener("click", (e) => {
-      if (!e.target.matches("#btn-menu")) {
-        if (menuContent.classList.contains("show")) {
-          menuContent.classList.remove("show");
-        }
+      if (
+        !e.target.matches("#btn-menu") &&
+        menuContent.classList.contains("show")
+      ) {
+        menuContent.classList.remove("show");
       }
     });
+  }
 
-    // Teclado numérico
+  /**
+   * Configura el teclado numérico
+   */
+  setupNumberPad() {
     document.querySelectorAll(".num-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const num = parseInt(e.target.dataset.num);
         this.handleNumberInput(num);
       });
     });
+  }
 
-    // Celdas del tablero (delegación de eventos)
+  /**
+   * Configura eventos del tablero
+   */
+  setupBoardEvents() {
     this.ui.boardElement.addEventListener("click", (e) => {
       const cell = e.target.closest(".cell");
       if (cell) {
@@ -154,17 +178,25 @@ class SudokuController {
         this.handleCellClick(row, col);
       }
     });
+  }
 
-    // Teclado físico
+  /**
+   * Configura eventos del teclado físico
+   */
+  setupKeyboardEvents() {
     document.addEventListener("keydown", (e) => {
       if (e.key >= "1" && e.key <= "9") {
         this.handleNumberInput(parseInt(e.key));
-      } else if (e.key === "Delete" || e.key === "Backspace" || e.key === "0") {
+      } else if (["delete", "Backspace", "0"].includes(e.key)) {
         this.handleNumberInput(0);
       }
     });
+  }
 
-    // Auto-guardar cada 30 segundos si hay actividad
+  /**
+   * Configura el auto-guardado periódico
+   */
+  setupAutoSave() {
     this.autoSaveInterval = setInterval(() => {
       if (this.isRunning && this.currentDifficulty) {
         this.autoSave();
@@ -173,23 +205,12 @@ class SudokuController {
   }
 
   /**
-   * Muestra un mensaje temporal y lo oculta automáticamente
-   * @param {string} text - Texto del mensaje
-   * @param {string} type - Tipo de mensaje
-   */
-  showTemporaryMessage(text, type = "success") {
-    this.ui.showMessage(text, type);
-    setTimeout(() => this.ui.clearMessages(), SudokuController.MESSAGE_TIMEOUT);
-  }
-
-  /**
    * Renderiza el tablero y actualiza conflictos
    */
   render() {
     this.ui.renderBoard(this.solver.board, this.solver.initialBoard);
-    const conflicts = this.solver.detectConflicts(this.solver.board);
-    this.ui.updateConflicts(conflicts);
-
+    const conlifcts = this.solver.detectConflicts(this.solver.board);
+    this.ui.updateConflicts(conlifcts);
     this.ui.updateNumberCounts(this.solver.board);
   }
 
@@ -316,7 +337,7 @@ class SudokuController {
     const hint = this.solver.getHint(this.solver.board);
 
     if (!hint) {
-      this.ui.showMessage("¡El tablero ya está completo!", "success");
+      this.showTemporaryMessage("¡El tablero ya está completo!", "success");
       return;
     }
 
@@ -387,7 +408,7 @@ class SudokuController {
           true
         );
       } else {
-        this.ui.showMessage(
+        this.showTemporaryMessage(
           "El tablero está completo pero tiene errores",
           "error"
         );
@@ -429,7 +450,9 @@ class SudokuController {
   }
 
   /**
-   * Formatea el tiempo
+   * Formatea el tiempo en formato MM:SS
+   * @param {number} seconds - Segundos totales
+   * @retuns {string} Tiempo formateado
    */
   formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -438,12 +461,20 @@ class SudokuController {
   }
 
   /**
+   * Muestra un mensaje temporal y lo oculta automáticamente
+   * @param {string} text - Texto del mensaje
+   * @param {string} type - Tipo de mensaje
+   */
+  showTemporaryMessage(text, type = "success") {
+    this.ui.showMessage(text, type);
+    setTimeout(() => this.ui.clearMessages(), SudokuController.MESSAGE_TIMEOUT);
+  }
+
+  /**
    * Muestra las estadísticas
    * Recoge los datos del Storage y se los pasa a la UI.
    */
   showStatistics() {
-    console.log("Mostrando estadísticas...");
-
     //  Obtener los datos del Storage
     const stats = this.storage.getStatistics();
     const bestTimes = this.storage.getBestTimes();
@@ -471,7 +502,7 @@ class SudokuController {
         );
       }
     } else {
-      this.ui.showMessage("⚠️ Genera un Sudoku primero", "error");
+      this.showTemporaryMessage("⚠️ Genera un Sudoku primero", "error");
     }
   }
 

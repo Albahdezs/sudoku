@@ -9,12 +9,13 @@
 
 class SudokuUI {
   constructor() {
-    // Inicialización de elementos DOM
+    // Elementos del DOM
     this.boardElement = document.getElementById("sudoku-board");
     this.numberPad = document.getElementById("number-pad");
-
     this.timerDisplay = document.getElementById("timer-display");
+    this.numberCountsElement = document.getElementById("number-counts");
 
+    // Modales
     this.statsModal = document.getElementById("stats-modal");
     this.statsModalContent = document.getElementById("modal-stats-content");
     this.modalCloseBtn = document.getElementById("modal-close-btn");
@@ -27,15 +28,14 @@ class SudokuUI {
     this.dialogModal = document.getElementById("dialog-modal");
     this.dialogContent = document.getElementById("dialog-content-wrapper");
 
-    this.numberCountsElement = document.getElementById("number-counts");
-
+    // Estado
     this.selectedCell = null;
 
-    // Configurar modales
+    // Configurar event listeners en modales
     this.setupModalListeners(this.statsModal, this.modalCloseBtn);
     this.setupModalListeners(this.instructionsModal, this.instructionsCloseBtn);
 
-    // Cierra el modal si se clica en el fondo (overlay)
+    // Modal de diálogo con lógica especial
     this.dialogModal.addEventListener("click", (e) => {
       if (e.target === this.dialogModal) {
         // Solo se cierra si no es un diálogo de decisión
@@ -46,7 +46,6 @@ class SudokuUI {
     });
   }
 
-  // Métodos genéricos de modales
   /**
    * Muestra el modal genérico
    * @param {HTMLElement} modal - Elemento del modal
@@ -130,8 +129,7 @@ class SudokuUI {
   updateSelection() {
     // Remover selección previa
     document.querySelectorAll(".cell").forEach((cell) => {
-      cell.classList.remove("selected");
-      cell.classList.remove("highlight");
+      cell.classList.remove("selected", "highlight");
     });
 
     // Agregar selección a la celda actual
@@ -140,8 +138,8 @@ class SudokuUI {
 
       // Recorrer todas las celdas de nuevo
       document.querySelectorAll(".cell").forEach((cell) => {
-        const row = cell.dataset.row;
-        const col = cell.dataset.col;
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
 
         // Resaltar la fila y la columna
         if (row == selRow || col == selCol) {
@@ -181,11 +179,7 @@ class SudokuUI {
    * @param {boolean} show - true para mostrar, false para ocultar
    */
   toggleNumberPad(show) {
-    if (show) {
-      this.numberPad.classList.remove("hidden");
-    } else {
-      this.numberPad.classList.add("hidden");
-    }
+    this.numberPad.classList.toggle("hidden", !show);
   }
 
   /**
@@ -222,7 +216,7 @@ class SudokuUI {
 
     // Lo ponemos en el modal y lo mostramos
     this.dialogContent.innerHTML = messageHtml;
-    this.dialogModal.classList.remove("hidden");
+    this.showModal(this.dialogModal);
 
     // Asignar lógica de cierre
     if (hasButton) {
@@ -232,11 +226,6 @@ class SudokuUI {
         .addEventListener("click", () => {
           this.hideDialog();
         });
-    } else {
-      // Si no, se auto-cierra (para partida guardada)
-      setTimeout(() => {
-        this.hideDialog();
-      }, 3000);
     }
   }
 
@@ -277,22 +266,32 @@ class SudokuUI {
   }
 
   /**
+   * Formatea el tiempo en formato MM:SS
+   * @param {number} seconds - Segundos totales
+   * @retuns {string} Tiempo formateado
+   */
+  formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
+
+  /**
    * Muestra las estadísticas
+   * @param {Object} stas - Estadísticas por dificultad
+   * @param {Object} bestTimes - Mejores tiempos por dificultad
    */
   showStatistics(stats, bestTimes) {
-    const formatTime = (seconds) => {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins}:${secs.toString().padStart(2, "0")}`;
+    const difficultyNames = {
+      easy: "Fácil",
+      medium: "Medio",
+      hard: "Difícil",
     };
 
-    let html = '<div class="stats-content">';
-    html += "<h3>📊 Estadísticas</h3>";
+    let html = '<div class="stats-content"><h3>📊 Estadísticas</h3>';
 
     ["easy", "medium", "hard"].forEach((difficulty) => {
-      const diffName = { easy: "Fácil", medium: "Medio", hard: "Difícil" }[
-        difficulty
-      ];
+      const diffName = difficultyNames[difficulty];
       const stat = stats[difficulty];
 
       if (stat && stat.played > 0) {
@@ -302,13 +301,15 @@ class SudokuUI {
           <p>🎮 Partidas jugadas: ${stat.played}</p>
           <p>✅ Completadas: ${stat.completed}</p>
           ${
-            stat.bestTime !== Infinity
-              ? `<p>⏱️ Mejor tiempo: ${formatTime(stat.bestTime)}</p>`
+            stat.bestTime !== Infinity &&
+            stat.bestTime !== null &&
+            stat.bestTime !== 0
+              ? `<p>⏱️ Mejor tiempo: ${this.formatTime(stat.bestTime)}</p>`
               : ""
           }
           ${
             stat.completed > 0
-              ? `<p>📈 Promedio: ${formatTime(
+              ? `<p>📈 Promedio: ${this.formatTime(
                   Math.floor(stat.totalTime / stat.completed)
                 )}</p>`
               : ""
@@ -317,11 +318,11 @@ class SudokuUI {
         `;
 
         // Mejores tiempos
-        if (bestTimes[difficulty] && bestTimes[difficulty].length > 0) {
+        if (bestTimes[difficulty]?.length > 0) {
           html += '<div class="best-times"><h5>🏆 Top 5:</h5><ol>';
           bestTimes[difficulty].slice(0, 5).forEach((record) => {
             const date = new Date(record.date).toLocaleDateString();
-            html += `<li>${formatTime(record.time)} - ${date}</li>`;
+            html += `<li>${this.formatTime(record.time)} - ${date}</li>`;
           });
           html += "</ol></div>";
         }
@@ -336,6 +337,8 @@ class SudokuUI {
 
   /**
    * Muestra diálogo de confirmación para cargar partida
+   * @param {Function} onAccept - Callback al aceptar
+   * @param {Function} onReject - Callback al rechazar
    */
   showLoadGameDialog(onAccept, onReject) {
     const dialogHtml = `
@@ -350,7 +353,7 @@ class SudokuUI {
 
     // Ponerlo en el modal y mostrarlo
     this.dialogContent.innerHTML = dialogHtml;
-    this.dialogModal.classList.remove("hidden");
+    this.showModal(this.dialogModal);
 
     // Conectar los botones
     this.dialogContent
@@ -381,7 +384,12 @@ class SudokuUI {
    */
   updateNumberCounts(board) {
     // Contar todos los números en el tablero
-    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+    const counts = {};
+    for (let num = 1; num <= 9; num++) {
+      counts[num] = 0;
+    }
+
+    // Contar todos los números en el tablero
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         const num = board[r][c];
@@ -411,6 +419,7 @@ class SudokuUI {
       this.numberCountsElement.appendChild(item);
     }
   }
+
   /**
    * Muestra el modal de instrucciones
    */

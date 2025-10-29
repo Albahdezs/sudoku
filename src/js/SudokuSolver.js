@@ -49,14 +49,14 @@ class SudokuSolver {
   isValid(board, row, col, num, excludeCurrentCell) {
     // Validar fila
     for (let x = 0; x < SudokuSolver.BOARD_SIZE; x++) {
-      if (x !== col && board[row][x] === num) {
+      if ((!excludeCurrentCell || x !== col) && board[row][x] === num) {
         return false;
       }
     }
 
     // Validar columna
     for (let x = 0; x < SudokuSolver.BOARD_SIZE; x++) {
-      if (x !== row && board[x][col] === num) {
+      if ((!excludeCurrentCell || x !== row) && board[x][col] === num) {
         return false;
       }
     }
@@ -71,7 +71,10 @@ class SudokuSolver {
       for (let j = 0; j < SudokuSolver.BOX_SIZE; j++) {
         const r = startRow + i;
         const c = startCol + j;
-        if ((r !== row || c !== col) && board[r][c] === num) {
+        if (
+          (!excludeCurrentCell || r !== row || c !== col) &&
+          board[r][c] === num
+        ) {
           return false;
         }
       }
@@ -162,12 +165,10 @@ class SudokuSolver {
           const num = board[i][j];
           board[i][j] = 0;
 
-          if (!this.isValid(board, i, j, num)) {
+          if (!this.isValid(board, i, j, num, false)) {
             board[i][j] = num;
             return false;
           }
-
-          board[i][j] = num;
         }
       }
     }
@@ -181,18 +182,19 @@ class SudokuSolver {
    */
   detectConflicts(board) {
     const conflicts = new Set();
+    const boardCopy = this.copyBoard(board);
 
     for (let i = 0; i < SudokuSolver.BOARD_SIZE; i++) {
       for (let j = 0; j < SudokuSolver.BOARD_SIZE; j++) {
-        if (board[i][j] !== 0) {
-          const num = board[i][j];
-          board[i][j] = 0;
+        if (boardCopy[i][j] !== 0) {
+          const num = boardCopy[i][j];
+          boardCopy[i][j] = 0;
 
-          if (!this.isValid(board, i, j, num)) {
+          if (!this.isValid(boardCopy, i, j, num, false)) {
             conflicts.add(`${i}-${j}`);
           }
 
-          board[i][j] = num;
+          boardCopy[i][j] = num;
         }
       }
     }
@@ -236,10 +238,12 @@ class SudokuSolver {
   /**
    * Genera un nuevo Sudoku 100% aleatorio (v4)
    * Usa 'solveRandomly' y el borrado no simétrico.
+   * @param {string} difficulty - 'easy', 'medium' o 'hard'
+   * @retuns {Array} Tablero generado
    */
   generate(difficulty = "medium") {
     // Log para estar 100% seguros de que se ejecuta esta versión
-    console.log("--- GENERADOR v4 (Aleatorio + Borrado NO Simétrico) ---");
+    console.log(`--- Generando Sudoku: ${difficulty} ---`);
 
     const newBoard = this.createEmptyBoard();
 
@@ -318,10 +322,10 @@ class SudokuSolver {
       // El número en la copia es la solución correcta
       const num = boardCopy[row][col];
       return { row, col, num };
-    } else {
-      // Esto solo pasaría si el puzle no tiene solución
-      return null;
     }
+
+    // Esto solo pasaría si el puzle no tiene solución
+    return null;
   }
 
   /**
@@ -331,7 +335,7 @@ class SudokuSolver {
    * @retuns {void}
    */
   loadBoard(board, initialBoard) {
-    this.board = board.map((row) => [...row]);
-    this.initialBoard = initialBoard.map((row) => [...row]);
+    this.board = this.copyBoard(board);
+    this.initialBoard = this.copyBoard(initialBoard);
   }
 }

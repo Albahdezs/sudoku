@@ -7,20 +7,24 @@
  */
 
 class SudokuStorage {
+  static STORAGE_KEYS = {
+    CURRENT_GAME: "sudoku_current_game",
+    BEST_TIMES: "sudoku_best_times",
+    STATISTICS: "sudoku_statistics",
+  };
+
   static MAX_BEST_TIMES = 10;
   static GAME_EXPIRY_DAYS = 7;
+  static MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
   constructor() {
-    this.STORAGE_KEYS = {
-      CURRENT_GAME: "sudoku_current_game",
-      BEST_TIMES: "sudoku_best_times",
-      STATISTICS: "sudoku_statistics",
-    };
+    this.STORAGE_KEYS = SudokuStorage.STORAGE_KEYS;
   }
 
   /**
    * Guarda el estado actual de la partida
    * @param {Object} gameState - Estado del juego
+   *@returns {boolean} true si se guardó correctamente
    */
   saveCurrentGame(gameState) {
     try {
@@ -55,7 +59,9 @@ class SudokuStorage {
 
       // Verificar que no sea muy antigua (más de 7 días)
       const expiryTime =
-        Date.now() - SudokuStorage.GAME_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+        Date.now() -
+        SudokuStorage.GAME_EXPIRY_DAYS * SudokuStorage.MILLISECONDS_PER_DAY;
+
       if (gameState.timestamp < expiryTime) {
         this.clearCurrentGame();
         return null;
@@ -79,6 +85,7 @@ class SudokuStorage {
    * Guarda un tiempo de resolución
    * @param {string} difficulty - Nivel de dificultad
    * @param {number} time - Tiempo en segundos
+   * @returns {booblean} true si se guardó correctamente
    */
   saveTime(difficulty, time) {
     try {
@@ -119,11 +126,19 @@ class SudokuStorage {
   getBestTimes() {
     try {
       const data = localStorage.getItem(this.STORAGE_KEYS.BEST_TIMES);
-      return data ? JSON.parse(data) : { easy: [], medium: [], hard: [] };
+      return data ? JSON.parse(data) : this.getEmptyBestTimes();
     } catch (error) {
       console.error("Error obteniendo tiempos:", error);
-      return { easy: [], medium: [], hard: [] };
+      return this.getEmptyBestTimes();
     }
+  }
+
+  /**
+   * Retorna estructura vacía para mejores tiempos
+   * @retuns {Object} Objeto con arrays vacíos por dificultad
+   */
+  getEmptyBestTimes() {
+    return { easy: [], medium: [], hard: [] };
   }
 
   /**
@@ -136,23 +151,14 @@ class SudokuStorage {
       const stats = this.getStatistics();
 
       if (!stats[difficulty]) {
-        stats[difficulty] = {
-          played: 0,
-          completed: 0,
-          totalTime: 0,
-          bestTime: Infinity,
-        };
+        stats[difficulty] = this.getEmptyStatEntry();
       }
 
       stats[difficulty].completed++;
       stats[difficulty].totalTime += time;
 
       const currentBest = stats[difficulty].bestTime;
-      if (
-        currentBest === Infinity ||
-        currentBest === null ||
-        currentBest === 0
-      ) {
+      if (this.isInvalidTime(currentBest)) {
         stats[difficulty].bestTime = time;
       } else {
         stats[difficulty].bestTime = Math.min(currentBest, time);
@@ -165,6 +171,15 @@ class SudokuStorage {
   }
 
   /**
+   * Verifica si un tiempo es inválido
+   * @param {number} time - Tiempo a verificar
+   * @retuns {boolean} true si es inválido
+   */
+  isInvalidTime(time) {
+    return time === Infinity || time === null || time === 0;
+  }
+
+  /**
    * Incrementa el contador de partidas jugadas
    * @param {string} difficulty - Nivel de dificultad
    */
@@ -173,12 +188,7 @@ class SudokuStorage {
       const stats = this.getStatistics();
 
       if (!stats[difficulty]) {
-        stats[difficulty] = {
-          played: 0,
-          completed: 0,
-          totalTime: 0,
-          bestTime: Infinity,
-        };
+        stats[difficulty] = this.getEmptyStatEntry();
       }
 
       stats[difficulty].played++;
@@ -201,6 +211,19 @@ class SudokuStorage {
       console.error("Error obteniendo estadísticas:", error);
       return {};
     }
+  }
+
+  /**
+   * Retorna una entrada de estadísticas vacía
+   * @returns {Object} Estructura de estadísticas vacía
+   */
+  getEmptyStatEntry() {
+    return {
+      played: 0,
+      completed: 0,
+      totalTime: 0,
+      bestTime: Infinity,
+    };
   }
 
   /**
