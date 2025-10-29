@@ -682,21 +682,21 @@ body {
   /* Contador de números más pequeño */
   .number-counts {
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 4px;
     margin-top: 15px;
   }
 
   .count-item {
-    padding: 4px 8px;
+    padding: 4px 6px;
   }
 
   .count-item .number {
-    font-size: 1rem;
+    font-size: 0.75rem;
     margin-right: 4px;
   }
 
   .count-item .count {
-    font-size: 0.75rem;
+    font-size: 0.55rem;
   }
 
   /* Botones de diálogo más pequeños */
