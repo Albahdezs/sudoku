@@ -67,3 +67,10 @@ Si quieres ejecutar este proyecto en tu propia máquina:
     _(Recomendado: Usa una extensión como "Live Server" en VS Code para verlo en un servidor local)._
 
 ---
+
+## 📬 Contacto
+
+Created by [@Albahdezs](https://github.com/Albahdezs)<br />
+
+👉 Visita mi web: [Alba Hernández](albahernandez.dev)<br />
+📩 Cotáctame por [email](alba.hdez.serr@gmail.com)
